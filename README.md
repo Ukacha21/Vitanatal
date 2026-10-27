@@ -247,7 +247,7 @@ Uterine Contraction Signal (EHG)
 ---
 
 ## 👥 Project Team & Contributors
-- 👩‍🔬 **Karimah Zubair** — Co-Developer & Project Teammate · [LinkedIn Profile](https://www.linkedin.com/in/karima-zoubir-78109b3b5)
+- 👩‍💻 **Karimah Zubair** — Computer Engineering · Co-Developer & Project Teammate · [LinkedIn Profile](https://www.linkedin.com/in/karima-zoubir-78109b3b5)
 - 👨‍💻 **Ukacha Atumane Juma** — Mechatronics Engineering & Embedded Systems Lead · [GitHub Profile](https://github.com/Ukacha21) · [LinkedIn Profile](https://linkedin.com/in/ukacha)
 
 ---
