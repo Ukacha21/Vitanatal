@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VITA-NATAL: Minimizing Avoidable Cesarean Births | Presentation</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 25, 43, 0.75);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --cyan: #06b6d4;
+      --rose: #f43f5e;
+      --indigo: #6366f1;
+      --amber: #f59e0b;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Ambient background gradient glow */
+    .ambient-glow {
+      position: fixed;
+      width: 60vw;
+      height: 60vh;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.25;
+      transition: all 0.8s ease;
+    }
+    .glow-1 { top: -10%; left: 10%; background: radial-gradient(circle, #06b6d4, #10b981); }
+    .glow-2 { bottom: -10%; right: 10%; background: radial-gradient(circle, #6366f1, #f43f5e); }
+
+    /* Presentation Header & Controls */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      color: #04100c;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .slide-counter {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 80px;
+      text-align: center;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--primary);
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #022014;
+      font-weight: 600;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #34d399;
+    }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 55px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 101;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--cyan));
+      width: 7%;
+      transition: width 0.3s ease;
+    }
+
+    /* Slide Deck Wrapper */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 56px);
+      margin-top: 56px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 3rem 4.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(40px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0) scale(1);
+    }
+    .slide.prev {
+      transform: translateX(-40px) scale(0.98);
+    }
+
+    /* Typography & Core Elements */
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+    .slide-badge.rose {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: var(--rose);
+    }
+    .slide-badge.cyan {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: var(--cyan);
+    }
+
+    h1.slide-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2.slide-subtitle {
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 850px;
+      line-height: 1.5;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Big Metric Display */
+    .metric-hero {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.4rem;
+    }
+    .metric-hero.danger { color: var(--rose); }
+    .metric-hero.success { color: var(--primary); }
+    .metric-hero.cyan { color: var(--cyan); }
+    .metric-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    /* Tables */
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    .table-custom th, .table-custom td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .table-custom th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .table-custom tr:not(:last-child) td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .table-custom td strong {
+      color: #fff;
+    }
+
+    /* Feature Pills & Tags */
+    .pill {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .pill-red { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+    .pill-cyan { background: rgba(6, 182, 212, 0.15); color: #38bdf8; }
+
+    /* Code & Formulas */
+    .math-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #38bdf8;
+      margin: 1rem 0;
+      display: inline-block;
+    }
+
+    /* Speaker Notes Drawer */
+    .notes-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(11, 15, 26, 0.95);
+      border-top: 1px solid var(--primary);
+      backdrop-filter: blur(20px);
+      padding: 1.25rem 2.5rem;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 150;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .notes-drawer.open {
+      transform: translateY(0);
+    }
+    .notes-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notes-content {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    /* Slide Navigation Footer Indicator */
+    .deck-nav-buttons {
+      position: fixed;
+      bottom: 2rem;
+      right: 2.5rem;
+      display: flex;
+      gap: 0.75rem;
+      z-index: 90;
+    }
+    .deck-nav-buttons button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(18, 25, 43, 0.85);
+      border: 1px solid var(--card-border);
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .deck-nav-buttons button:hover {
+      background: var(--primary);
+      color: #04100c;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 2rem 1.5rem; }
+      h1.slide-title { font-size: 2rem; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span>🌿 VITA-NATAL</span>
+      <span class="brand-badge">PROJECT NO-SEZARYEN</span>
+    </div>
+    <div class="nav-controls">
+      <span class="slide-counter" id="slideCounter">Slide 1 / 14</span>
+      <button class="btn" id="notesToggleBtn" title="Toggle Speaker Notes (N)">
+        🎙️ Notes
+      </button>
+      <button class="btn" id="fullscreenBtn" title="Fullscreen (F)">
+        ⛶ Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Slides Deck -->
+  <div class="deck-container" id="deckContainer">
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide active" data-notes="Good morning. Today we present Project No-Sezaryen, codenamed VITA-NATAL. Every year, millions of mothers undergo major surgical abdominal delivery not because of inevitable obstetric pathology, but because clinicians and mothers lack continuous monitoring between clinic visits. We built an IoT wearable and TinyML edge ecosystem to continuously track fetal health, predict presentation early, and safely minimize avoidable C-sections.">
+      <span class="slide-badge">Biomedical IoT & Digital Health Keynote</span>
+      <h1 class="slide-title">VITA-NATAL (No-Sezaryen)</h1>
+      <h2 class="slide-subtitle">IoT-Enabled Maternal-Fetal Telemetry & Fetal Presentation Prediction to Minimize Avoidable Cesarean Deliveries.</h2>
+      
+      <div class="grid-3" style="margin-top: 1.5rem;">
+        <div class="card">
+          <div class="card-title">📡 "PartusBand" Wearable</div>
+          <div class="card-desc">Multi-modal passive biosensing: 4-quadrant acoustic MEMS auscultation, TI ADS1298 fECG/EHG biopotentials, and 4× Bosch IMU kick sensors.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 Edge TinyML Engine</div>
+          <div class="card-desc">Spatial Heart-Kick Vectoring (SHKV) predicting Vertex vs. Breech presentation in real time, plus EHG labor contraction triage.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📱 "MaternaSafe" App</div>
+          <div class="card-desc">Live Fetal Presentation Compass, biomechanical natural birth postural coaching, and FIGO/ACOG Non-Stress Test PDF telemetry export.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: THE PROBLEM -->
+    <section class="slide" data-notes="The WHO benchmark for optimal population cesarean rates is 10 to 15%. Anything above this offers no maternal or neonatal benefit, yet introduces surgical risks. In Turkey, the rate exceeds 58%, and in Brazil, it surpasses 55%. In private clinics, it often tops 80%. This exposes mothers to hemorrhage, infection, and long recovery, while depriving newborns of the natural thoracic squeeze.">
+      <span class="slide-badge rose">The Obstetric Crisis</span>
+      <h1 class="slide-title">The Cesarean Epidemic</h1>
+      <h2 class="slide-subtitle">Surgical birth was designed as an emergency lifesaver, but has escalated into an overused clinical default.</h2>
+
+      <div class="grid-4" style="margin-top: 1rem;">
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero success">10-15%</div>
+          <div class="metric-label">WHO Recommended Rate</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Maximum rate justified by medical necessity.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero danger">> 58.4%</div>
+          <div class="metric-label">Türkiye National Rate</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Among the highest in OECD; >75% in private centers.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero danger">> 55.7%</div>
+          <div class="metric-label">Brazil & Latin America</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Overwhelming majority of urban hospital births.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero danger">3×</div>
+          <div class="metric-label">Maternal Morbidity Risk</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Higher risk of severe postpartum hemorrhage & infection.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ROOT CAUSES -->
+    <section class="slide" data-notes="When we dissect why preventable C-sections happen, we identify 4 clinical triggers: 1) Late Breech Catch at 38 weeks when the baby is too big to rotate; 2) Premature hospital admission during false labor triggering the Pitocin cascade; 3) Occiput posterior malposition causing agonizing back labor; and 4) Lack of continuous reassurance at home causing maternal anxiety.">
+      <span class="slide-badge rose">Root Cause Breakdown</span>
+      <h1 class="slide-title">Why Do Avoidable C-Sections Happen?</h1>
+      <h2 class="slide-subtitle">Avoidable surgical deliveries are driven by information asymmetry and late clinical reaction.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚠️ 1. Late Breech Detection (Weeks 37–39)</div>
+          <div class="card-desc">Breech position is typically confirmed at the last ultrasound. With low amniotic fluid remaining, there is no time for natural exercises, leading to an automatic planned surgical booking.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ 2. The "Admission Cascade" (False Labor)</div>
+          <div class="card-desc">Anxious mothers enter the ward during Braxton Hicks. Clinicians administer synthetic oxytocin (Pitocin); if the cervix isn't effaced, labor stalls, triggering an "emergency" C-section.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ 3. Occiput Posterior ("Sunny-Side Up") Dystocia</div>
+          <div class="card-desc">The fetal occiput presses against the maternal sacrum, creating severe prolonged back labor, maternal exhaustion, and surgical vacuum/C-section extraction.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ 4. Maternal Anxiety & Episodic Blind Spots</div>
+          <div class="card-desc">Expectant mothers spend 4 to 6 weeks between clinic visits without reassurance, driving anxiety-driven requests for elective surgical dates out of fear.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: THE PARADIGM SHIFT -->
+    <section class="slide" data-notes="Our paradigm shifts care from episodic reaction to continuous early prevention. Between Weeks 28 and 34, amniotic fluid volume allows a 70 to 85% success rate in naturally flipping a baby through targeted maternal posture. We listen 100% passively without harmful ultrasound beams.">
+      <span class="slide-badge cyan">The Solution Philosophy</span>
+      <h1 class="slide-title">The Paradigm Shift</h1>
+      <h2 class="slide-subtitle">From episodic clinical reaction to continuous physiological empowerment.</h2>
+
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th>Obstetric Aspect</th>
+            <th>Traditional Clinic Model</th>
+            <th>VITA-NATAL IoT Model</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Monitoring Frequency</strong></td>
+            <td>Episodic ultrasound checks every 4–6 weeks</td>
+            <td><span class="pill pill-green">Continuous</span> Daily home telemetry & automatic logging</td>
+          </tr>
+          <tr>
+            <td><strong>Breech Management</strong></td>
+            <td>Discovered late at W37–39 $\rightarrow$ Automatic surgery</td>
+            <td><span class="pill pill-green">Golden Window (W28–34)</span> Guided natural posture version (70–85% success)</td>
+          </tr>
+          <tr>
+            <td><strong>Labor Contraction Timing</strong></td>
+            <td>Subjective stopwatch timing by panicked parents</td>
+            <td><span class="pill pill-green">Objective EHG</span> Uterine electromyography burst spectral analysis</td>
+          </tr>
+          <tr>
+            <td><strong>Acoustic Radiation</strong></td>
+            <td>Handheld Doppler monitors emitting continuous acoustic energy</td>
+            <td><span class="pill pill-green">100% Passive</span> Zero ultrasound radiation; pure acoustic listening</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SLIDE 5: SYSTEM ARCHITECTURE -->
+    <section class="slide" data-notes="Here is the end-to-end architecture. The PartusBand wearable houses biosensors and microcontrollers. All sensor fusion and TinyML vectoring run locally on the Nordic dual-core processor. Encrypted BLE 5.3 feeds the MaternaSafe application, which communicates with the mother and provides a remote dashboard for her obstetrician.">
+      <span class="slide-badge">Architecture Blueprint</span>
+      <h1 class="slide-title">System Architecture</h1>
+      <h2 class="slide-subtitle">A seamless pipeline from epidermal micro-signals to clinician decision support.</h2>
+
+      <div class="grid-3">
+        <div class="card" style="border-left: 4px solid var(--primary);">
+          <div class="card-title">1. PartusBand Wearable</div>
+          <div class="card-desc">
+            • 4× Piezoelectric MEMS Acoustic Mics<br>
+            • TI ADS1298 24-bit fECG & EHG AFE<br>
+            • 4× Bosch BMA456 IMUs<br>
+            • Nordic nRF5340 Dual ARM Cortex-M33
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--cyan);">
+          <div class="card-title">2. Edge TinyML Engine</div>
+          <div class="card-desc">
+            • FastICA Mother/Fetus QRS separation<br>
+            • Spatial Heart-Kick Vectoring (SHKV)<br>
+            • Uterine EHG Burst Spectral Analyzer<br>
+            • Real-time motion artifact gating
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--indigo);">
+          <div class="card-title">3. MaternaSafe App & Cloud</div>
+          <div class="card-desc">
+            • Real-Time Fetal Presentation Compass<br>
+            • Natural Birth Postural Coach (Spinning Babies)<br>
+            • Contraction Triage & Ward Alert<br>
+            • FIGO/ACOG Standard CTG PDF Export
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: HARDWARE ENGINEERING -->
+    <section class="slide" data-notes="PartusBand is engineered with medical-grade biocompatible liquid silicone elastomer with an IP67 rating. The TI ADS1298 analog front end provides 115 dB common mode rejection to extract 10-microvolt fetal heart potentials. Four piezoelectric MEMS contact mics capture heart valve closures passively, and 4 IMUs log kicks. With an 850 mAh battery, it runs for over 120 hours on Qi wireless charging.">
+      <span class="slide-badge">Embedded Mechatronics</span>
+      <h1 class="slide-title">Wearable Hardware: "PartusBand"</h1>
+      <h2 class="slide-subtitle">High-precision passive biosensing in an ergonomic, breathable abdominal band.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚡ Analog Front-End (TI ADS1298)</div>
+          <div class="card-desc">
+            • 24-bit Delta-Sigma ADC with 8 differential channels.<br>
+            • Integrated Right Leg Drive (RLD) for >115 dB CMRR.<br>
+            • Dual-band filtering: fECG (10–100 Hz) & EHG (0.1–3.0 Hz).<br>
+            • Detects microvolt fetal cardiac signals through maternal tissue.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎙️ Passive Acoustic MEMS Array</div>
+          <div class="card-desc">
+            • 4-quadrant Knowles/Vesper piezoelectric acoustic transducers.<br>
+            • Tuned to low-frequency fetal heart valve closures ($S_1, S_2$ at 20–120 Hz).<br>
+            • Waterproof acoustic diaphragm with silicone acoustic impedance matching.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏃 4-Quadrant IMU Matrix (Bosch BMA456)</div>
+          <div class="card-desc">
+            • Distributed triaxial accelerometers on LUQ, RUQ, LLQ, RLQ.<br>
+            • Hardware tap-interrupt engine detecting high-velocity fetal limb kicks.<br>
+            • Differentiates maternal walking from fetal limb movement.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔋 Power & Enclosure Ergonomics</div>
+          <div class="card-desc">
+            • 850 mAh LiPo battery providing ~120 hours intermittent monitoring.<br>
+            • Qi wireless inductive charging (sealed enclosure, IP67 waterproof).<br>
+            • Medical grade ISO 10993 liquid silicone with breathable stretch channels.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: ALGORITHM I - SHKV -->
+    <section class="slide" data-notes="Our first breakthrough algorithm is Spatial Heart-Kick Vectoring, or SHKV. In human anatomy, the heart is in the thorax, and high-momentum kicks originate from the feet. By triangulating the acoustic heart centroid and subtracting it from the kick centroid, we yield a 2D presentation vector. A positive Y vector indicates cephalic; a negative Y indicates breech.">
+      <span class="slide-badge">Proprietary TinyML</span>
+      <h1 class="slide-title">Algorithm I: Spatial Heart-Kick Vectoring</h1>
+      <h2 class="slide-subtitle">Deriving continuous fetal orientation without ultrasound beam steering.</h2>
+
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title">📐 Mathematical Derivation</div>
+            <p class="card-desc">Acoustic Heart Centroid ($\vec{C}_{\text{heart}}$):</p>
+            <div class="math-box">C_heart = Σ(A_i · P_i) / Σ(A_i)</div>
+            <p class="card-desc">Kinetic Kick Centroid ($\vec{C}_{\text{kick}}$):</p>
+            <div class="math-box">C_kick = Σ(Δa_k · S_k) / Σ(Δa_k)</div>
+            <p class="card-desc">Fetal Presentation Vector:</p>
+            <div class="math-box">V_presentation = C_kick - C_heart</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧭 Classification Output Mapping</div>
+          <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="padding: 0.6rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--primary); border-radius: 4px;">
+              <strong style="color: var(--primary);">Cephalic (Vertex) — V_y > 0</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Kicks in fundus, heart near pelvis. Ideal for vaginal birth.</div>
+            </div>
+            <div style="padding: 0.6rem; background: rgba(244, 63, 94, 0.1); border-left: 3px solid var(--rose); border-radius: 4px;">
+              <strong style="color: var(--rose);">Breech Presentation — V_y < 0</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Heart superior, kicks inferior. High surgical risk if uncorrected.</div>
+            </div>
+            <div style="padding: 0.6rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--amber); border-radius: 4px;">
+              <strong style="color: var(--amber);">Transverse Lie — |V_x| ≫ |V_y|</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Baby lying sideways across pelvic axis. Requires OB intervention.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: ALGORITHM II - EHG TRIAGE -->
+    <section class="slide" data-notes="Our second algorithm tackles the premature admission cascade using Uterine Electromyography (EHG). False labor contractions are chaotic and peak below 0.3 Hz. When true labor begins, uterine myometrial cells form gap junctions, increasing propagation speed and shifting peak frequency above 0.35 Hz. MaternaSafe tells parents exactly when to go to the hospital, avoiding stalled induction.">
+      <span class="slide-badge">Labor Electrophysiology</span>
+      <h1 class="slide-title">Algorithm II: Uterine EHG Labor Triage</h1>
+      <h2 class="slide-subtitle">Stopping the premature hospital admission cascade before synthetic oxytocin is administered.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--amber);">⚡ Braxton Hicks (False Labor)</div>
+          <div class="card-desc" style="line-height: 1.8;">
+            • <strong>Peak Frequency ($F_{\text{peak}}$):</strong> &lt; 0.30 Hz<br>
+            • <strong>Wave Propagation Velocity:</strong> &lt; 1.8 cm/s (Isolated local spasms)<br>
+            • <strong>High/Low Energy Ratio ($R_{\text{H/L}}$):</strong> &lt; 0.4 (Low electrical power)<br>
+            • <strong>System Action:</strong> Advises mother to rest and hydrate at home.
+          </div>
+        </div>
+        <div class="card" style="border-color: var(--primary);">
+          <div class="card-title" style="color: var(--primary);">🔥 Active True Labor Progression</div>
+          <div class="card-desc" style="line-height: 1.8;">
+            • <strong>Peak Frequency ($F_{\text{peak}}$):</strong> &gt; 0.35 Hz – 0.85 Hz<br>
+            • <strong>Wave Propagation Velocity:</strong> 2.5 – 6.0 cm/s (Organ-wide synchronized wave)<br>
+            • <strong>High/Low Energy Ratio ($R_{\text{H/L}}$):</strong> &gt; 1.2 (Active cervical effacement)<br>
+            • <strong>System Action:</strong> Notifies hospital & instructs parents to depart.
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 1.5rem; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+        <strong style="color: var(--primary);">Clinical Impact:</strong> Prevents premature cervical ripening failures, reduces synthetic oxytocin hyperstimulation, and directly prevents emergency cesareans.
+      </div>
+    </section>
+
+    <!-- SLIDE 9: MOBILE APP -->
+    <section class="slide" data-notes="The MaternaSafe mobile app translates complex biomedical telemetry into an intuitive, calming experience. Features include the Live Fetal Compass, automated kick actigraphy, guided biomechanical exercise routines for turning breech babies, contraction triage, and automated FIGO-compliant Non-Stress Test reports exported directly to obstetricians.">
+      <span class="slide-badge cyan">User Experience & Telehealth</span>
+      <h1 class="slide-title">Companion App: "MaternaSafe"</h1>
+      <h2 class="slide-subtitle">Empowering expectant mothers while keeping obstetricians connected.</h2>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🧭 Fetal Compass View</div>
+          <div class="card-desc">Intuitive anatomical graphic showing real-time presentation (head-down vs. breech), heart rate baseline, and variability band.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧘 Biomechanical Posture Coach</div>
+          <div class="card-desc">Interactive video routines (Forward-Leaning Inversions, Pelvic Rocking) dynamically tailored to the detected fetal presentation.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⏱️ Contraction Triage Timer</div>
+          <div class="card-desc">Auto-timed contractions via EHG burst telemetry. Removes the guesswork of manual stopwatches.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Kick Actigram Map</div>
+          <div class="card-desc">Autonomous passive kick counting. Replaces tedious Cardiff 'Count-to-10' paper charts.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📑 Clinical CTG / NST Generator</div>
+          <div class="card-desc">Exports standard 20-minute FIGO/ACOG compliant Non-Stress Test reports as signed PDFs.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔒 Offline-First & Encrypted</div>
+          <div class="card-desc">Local SQLite database with 128-bit AES BLE encryption. Fully HIPAA and GDPR compliant.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: CLINICAL PROTOCOL -->
+    <section class="slide" data-notes="Here is our 3-tier clinical protocol for turning breech babies naturally. At Weeks 28 to 32, early detection triggers Tier 1 home biomechanics (Spinning Babies routines) which achieve a 70 to 85% spontaneous version rate. If breech persists at Week 36, Tier 2 triggers an early notification for clinician-led External Cephalic Version with full telemetry context.">
+      <span class="slide-badge">Obstetric Protocol</span>
+      <h1 class="slide-title">Turning Breech Babies Naturally</h1>
+      <h2 class="slide-subtitle">A proactive 3-tier escalation model leveraging the gestational golden window.</h2>
+
+      <div class="grid-3">
+        <div class="card" style="border-top: 4px solid var(--primary);">
+          <div class="card-title">Tier 1: Biomechanics (W28–34)</div>
+          <div class="card-desc">
+            • Forward-Leaning Inversions (FLI)<br>
+            • Pelvic tilts & side-lying releases<br>
+            • Relaxes uterosacral ligaments<br>
+            • <strong>70%–85% Spontaneous Version Rate!</strong>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--cyan);">
+          <div class="card-title">Tier 2: Clinician ECV (W36–37)</div>
+          <div class="card-desc">
+            • Automated alert to obstetrician<br>
+            • Complete CTG & posture history<br>
+            • Scheduled External Cephalic Version<br>
+            • Continuous FHR tracking during version
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--indigo);">
+          <div class="card-title">Tier 3: Active Labor Support</div>
+          <div class="card-desc">
+            • Real-time fetal spine orientation<br>
+            • Detection of occiput posterior rotation<br>
+            • Guided upright & forward postures<br>
+            • <strong>Safe Natural Vaginal Delivery</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: SAFETY & COMPLIANCE -->
+    <section class="slide" data-notes="Safety is paramount. Handheld Doppler monitors emit continuous acoustic energy, which health authorities discourage for frequent home use. PartusBand is 100% passive listening with zero ultrasound radiation. It complies with ISO 10993 for biocompatibility, IEC 60601-1-11 for home medical electrical safety, and AES-128 encryption for health data.">
+      <span class="slide-badge">Regulatory & Safety</span>
+      <h1 class="slide-title">Zero Acoustic Radiation & Safety</h1>
+      <h2 class="slide-subtitle">Engineered to meet the highest international medical device standards.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🛡️ 100% Passive Listening (Zero Radiation)</div>
+          <div class="card-desc">
+            Unlike commercial ultrasound dopplers that beam continuous mechanical acoustic energy into fetal tissue, PartusBand emits <strong>zero acoustic or electromagnetic radiation</strong>. Safe for unlimited daily continuous wear.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🌿 ISO 10993 Biocompatibility</div>
+          <div class="card-desc">
+            Enclosure and contact surfaces certified under ISO 10993-5 (Cytotoxicity) and ISO 10993-10 (Skin Sensitization). Hypoallergenic liquid silicone elastomer suitable for sensitive maternal skin.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏥 IEC 60601-1-11 Home Healthcare Standard</div>
+          <div class="card-desc">
+            Full compliance with medical electrical equipment requirements for home environments: reinforced electrical isolation, IP67 moisture ingress protection, and fail-safe over-temperature cutoffs.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔐 HIPAA & GDPR Encrypted Telemetry</div>
+          <div class="card-desc">
+            Bluetooth Low Energy 5.3 telemetry secured with 128-bit AES Galois/Counter Mode (GCM). Anonymized patient tokens and end-to-end encrypted clinician sharing.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: ECONOMIC VALUE -->
+    <section class="slide" data-notes="The economics are compelling for all stakeholders. A C-section costs between $3,500 and $9,000 compared to $1,500 to $3,200 for a vaginal delivery. Averting just 10% of unnecessary cesareans saves tens of millions in insurance payouts, frees up hospital beds, and reduces neonatal ICU admissions for respiratory distress.">
+      <span class="slide-badge">Healthcare Economics</span>
+      <h1 class="slide-title">Healthcare Value & Economic ROI</h1>
+      <h2 class="slide-subtitle">Aligning health outcomes with massive economic savings for hospitals and payers.</h2>
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero success">$2,000–$5,500</div>
+          <div class="metric-label">Savings Per Averted C-Section</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Immediate reduction in operating room supplies, surgical staffing, and inpatient recovery costs.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero cyan">2.5 Days</div>
+          <div class="metric-label">Hospital Bed Days Saved</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">C-section requires 3–5 hospital days; natural birth allows discharge within 24–36 hours.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="metric-hero primary">40% Drop</div>
+          <div class="metric-label">In Transient Tachypnea (TTN)</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Avoiding early elective surgical extraction drastically reduces neonatal intensive care (NICU) admissions.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: ROADMAP -->
+    <section class="slide" data-notes="Our roadmap spans 4 phases: Phase 1 benchtop validation with acoustic phantoms; Phase 2 a 50-patient clinical observational study comparing our algorithm directly against bedside ultrasound; Phase 3 medical industrial tooling and app polish; and Phase 4 CE MDR Class IIa and FDA 510k regulatory clearance.">
+      <span class="slide-badge">Execution Plan</span>
+      <h1 class="slide-title">Development Roadmap & Milestones</h1>
+      <h2 class="slide-subtitle">A disciplined pathway from benchtop proof-of-concept to clinical deployment.</h2>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-title">Phase 1 (M1–4)</div>
+          <div class="card-desc">
+            <strong>Benchtop Prototype</strong><br>
+            • Flex-PCB fabrication<br>
+            • ADS1298 + MEMS + IMU integration<br>
+            • Acoustic phantom calibration
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Phase 2 (M5–9)</div>
+          <div class="card-desc">
+            <strong>Clinical Study</strong><br>
+            • 50-patient maternity cohort<br>
+            • SHKV algorithm benchmarked against ultrasound ground truth<br>
+            • EHG contraction training
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Phase 3 (M10–14)</div>
+          <div class="card-desc">
+            <strong>App & Tooling</strong><br>
+            • IP67 liquid silicone tooling<br>
+            • Flutter MaternaSafe completion<br>
+            • Clinician web telemetry portal
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Phase 4 (M15–20)</div>
+          <div class="card-desc">
+            <strong>Regulatory & Pilot</strong><br>
+            • CE MDR Class IIa submission<br>
+            • FDA 510(k) pathway prep<br>
+            • Commercial pilot with private maternity hospital networks
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: CONCLUSION -->
+    <section class="slide" data-notes="In conclusion, birth is not an illness to be surgically managed—it is a physiological milestone that deserves our smartest engineering support. With VITA-NATAL, we bridge the gap between home and hospital, equipping mothers with confidence and giving obstetricians the objective data they need to support natural birth. Thank you.">
+      <span class="slide-badge">The Future of Birth</span>
+      <h1 class="slide-title">Empowering Confident, Natural Birth</h1>
+      <h2 class="slide-subtitle">"Surgery should be an indispensable emergency backup, not a routine default."</h2>
+
+      <div class="grid-3" style="margin-top: 1rem;">
+        <div class="card">
+          <div class="card-title">100% Passive Telemetry</div>
+          <div class="card-desc">Zero radiation, continuous daily peace of mind for expectant mothers.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Predictive Intelligence</div>
+          <div class="card-desc">Catching breech presentation early in the golden window when natural version succeeds.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Objective Labor Triage</div>
+          <div class="card-desc">Halting the premature hospital admission cascade that leads to stalled induction and surgery.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1.5rem; text-align: center; background: rgba(16, 185, 129, 0.12); border-color: var(--primary);">
+        <h3 style="color: #fff; font-size: 1.25rem;">Project No-Sezaryen / VITA-NATAL</h3>
+        <p style="color: var(--primary); font-weight: 600; margin-top: 0.25rem;">Thank you! We welcome your questions, clinical feedback, and partnership.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Speaker Notes Drawer -->
+  <div class="notes-drawer" id="notesDrawer">
+    <div class="notes-title">
+      <span>🎙️ Presenter Talking Points & Script</span>
+      <span style="font-size: 0.75rem; color: var(--text-muted);">Press 'N' or click Notes to close</span>
+    </div>
+    <div class="notes-content" id="notesContent"></div>
+  </div>
+
+  <!-- Floating Nav Buttons -->
+  <div class="deck-nav-buttons">
+    <button id="prevBtn" title="Previous Slide (Left Arrow)">❮</button>
+    <button id="nextBtn" title="Next Slide (Right Arrow / Space)">❯</button>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const slideCounter = document.getElementById('slideCounter');
+    const progressBar = document.getElementById('progressBar');
+    const notesDrawer = document.getElementById('notesDrawer');
+    const notesContent = document.getElementById('notesContent');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'prev');
+        if (idx === index) {
+          slide.classList.add('active');
+        } else if (idx < index) {
+          slide.classList.add('prev');
+        }
+      });
+
+      currentSlide = index;
+      slideCounter.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+      progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+      // Update speaker notes
+      const notes = slides[currentSlide].getAttribute('data-notes') || 'No notes for this slide.';
+      notesContent.textContent = notes;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        updateSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        updateSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleNotes() {
+      notesDrawer.classList.toggle('open');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Event Listeners
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowRight':
+        case ' ':
+        case 'PageDown':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'n':
+        case 'N':
+          toggleNotes();
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
+          break;
+        case 'Home':
+          updateSlide(0);
+          break;
+        case 'End':
+          updateSlide(totalSlides - 1);
+          break;
+      }
+    });
+
+    // Touch Swipe Navigation
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) nextSlide();
+      if (touchEndX > touchStartX + 50) prevSlide();
+    }, { passive: true });
+
+    // Initialize
+    updateSlide(0);
+  </script>
+</body>
+</html>
